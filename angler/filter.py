@@ -39,7 +39,8 @@ def get_W(Nx, Ny, design_region, NPML, R=10):
     else:
         j_range = range(R + NPML[1] + 1, Ny - R - 1 - NPML[1])
 
-    bar = progressbar.ProgressBar(max_value=len(i_range)+1)
+    bar = progressbar.ProgressBar(maxval=len(i_range)+1)
+    bar.start()
 
     for counti, i1 in enumerate(i_range):
         bar.update(counti)        
