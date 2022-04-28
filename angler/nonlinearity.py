@@ -21,10 +21,9 @@ class Nonlinearity:
                 if self.eps_max is None:
                     raise AssertionError("Must provide eps_max when eps_scale is True") 
 
-                else:
-                    kerr_nonlinearity     = lambda e, eps_r:3*chi*nl_region*np.square(np.abs(e))*((eps_r-1)/(eps_max - 1))
-                    kerr_nl_de            = lambda e, eps_r:3*chi*nl_region*np.conj(e)*((eps_r-1)/(eps_max - 1))
-                    kerr_nl_deps          = lambda e, eps_r:3*chi*nl_region*np.square(np.abs(e))*(1/(eps_max - 1))
+                kerr_nonlinearity     = lambda e, eps_r:3*chi*nl_region*np.square(np.abs(e))*((eps_r-1)/(eps_max - 1))
+                kerr_nl_de            = lambda e, eps_r:3*chi*nl_region*np.conj(e)*((eps_r-1)/(eps_max - 1))
+                kerr_nl_deps          = lambda e, eps_r:3*chi*nl_region*np.square(np.abs(e))*(1/(eps_max - 1))
 
             else:
                 kerr_nonlinearity     = lambda e, eps_r:3*chi*nl_region*np.square(np.abs(e))

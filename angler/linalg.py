@@ -21,8 +21,7 @@ def grid_average(center_array, w):
 
     xy = {'x': 0, 'y': 1}
     center_shifted = np.roll(center_array, 1, axis=xy[w])
-    avg_array = (center_shifted+center_array)/2
-    return avg_array
+    return (center_shifted+center_array)/2
 
 
 def dL(N, xrange, yrange=None):
@@ -96,7 +95,10 @@ def construct_A(omega, xrange, yrange, eps_r, NPML, pol, L0,
             + omega**2*MU_0_*sp.eye(M)
 
     else:
-        raise ValueError("something went wrong and pol is not one of Ez, Hz, instead was given {}".format(pol))
+        raise ValueError(
+            f"something went wrong and pol is not one of Ez, Hz, instead was given {pol}"
+        )
+
 
     derivs = {
         'Dyb' : Dyb,
@@ -142,7 +144,10 @@ def solver_direct(A, b, timing=False, solver=SOLVER):
         x = spl.spsolve(A, b)
 
     else:
-        raise ValueError('Invalid solver choice: {}, options are pardiso or scipy'.format(str(solver)))
+        raise ValueError(
+            f'Invalid solver choice: {str(solver)}, options are pardiso or scipy'
+        )
+
 
     if timing:
         print('Linear system solve took {:.2f} seconds'.format(time()-t))
@@ -179,7 +184,10 @@ def solver_complex2real(A11, A12, b, timing=False, solver=SOLVER):
         x = spsolve(Areal, np.hstack((b_re, b_im)))
 
     else:
-        raise ValueError('Invalid solver choice: {}, options are pardiso or scipy'.format(str(solver)))
+        raise ValueError(
+            f'Invalid solver choice: {str(solver)}, options are pardiso or scipy'
+        )
+
 
     if timing:
         print('Linear system solve took {:.2f} seconds'.format(time()-t))

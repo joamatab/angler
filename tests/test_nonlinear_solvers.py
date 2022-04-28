@@ -34,7 +34,7 @@ class Test_NLSolve(unittest.TestCase):
         nl_region[int(Nx/2-L_chi3_voxels/2):int(Nx/2+L_chi3_voxels/2), int(Ny/2-width_voxels/2):int(Ny/2+width_voxels/2)] = 1
 
         simulation = Simulation(omega, eps_r, dl, [15, 15], 'Ez')
-        simulation.add_mode(n0, 'x', [17, int(Ny/2)], width_voxels*3)
+        simulation.add_mode(n0, 'x', [17, Ny // 2], width_voxels*3)
         simulation.setup_modes()
         simulation.add_nl(chi3, nl_region, eps_scale=True, eps_max=np.max(eps_r))
 

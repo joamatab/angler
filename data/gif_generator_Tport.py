@@ -98,8 +98,7 @@ def J(e, e_nl):
     linear_top =     -1*npa.sum(npa.square(npa.abs(e))*J_top)
     nonlinear_right = -1*npa.sum(npa.square(npa.abs(e_nl))*J_right)
     nonlinear_top =   1*npa.sum(npa.square(npa.abs(e_nl))*J_top)
-    objfn = (linear_right + linear_top + nonlinear_right + nonlinear_top)/2
-    return objfn
+    return (linear_right + linear_top + nonlinear_right + nonlinear_top)/2
 
 # make optimization object
 R = 5          # filter radius of curvature (pixels)  (takes a while to set up as R > 5-10)

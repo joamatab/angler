@@ -198,7 +198,7 @@ def accelerator(beta, gap, lambda0, L, spc, dl, NPML, eps_start):
 
     Nx = 2*NPML[0] + int((4*spc + 2*L + gap)/dl)
     Ny = int(beta*lambda0/dl)
-    nx, ny = int(Nx/2), int(Ny/2)            # halfway grid points
+    nx, ny = int(Nx/2), Ny // 2
     shape = (Nx, Ny)                          # shape of domain (in num. grids)
 
 
@@ -231,7 +231,7 @@ def accelerator_multi(beta, gap, lambda0, L, spc, num_channels, dl, NPML, eps_st
         raise ValueError("must be odd number of channels")
 
     Ny = int(beta*lambda0/dl)
-    nx, ny = int(Nx/2), int(Ny/2)            # halfway grid points
+    nx, ny = int(Nx/2), Ny // 2
     shape = (Nx, Ny)                          # shape of domain (in num. grids)
 
 

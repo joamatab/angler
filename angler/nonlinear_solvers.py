@@ -51,7 +51,7 @@ def born_solve(simulation,
 			break
 
 	if convergence > conv_threshold:
-		print("the simulation did not converge, reached {}".format(convergence))
+		print(f"the simulation did not converge, reached {convergence}")
 
 	return (Fx, Fy, Fz, conv_array)
 
@@ -67,53 +67,51 @@ def newton_solve(simulation,
 	# num. columns and rows of A
 	Nbig = simulation.Nx*simulation.Ny
 
-	if simulation.pol == 'Ez':
-		# Defne the starting field for the simulation
-		if Estart is None:
-			if simulation.fields['Ez'] is None:
-				(_, _, Ez) = simulation.solve_fields()
-			else:
-				Ez = deepcopy(simulation.fields['Ez'])
+	if simulation.pol != 'Ez':
+		raise ValueError(f'Invalid polarization: {str(self.pol)}')
+	# Defne the starting field for the simulation
+	if Estart is None:
+		if simulation.fields['Ez'] is None:
+			(_, _, Ez) = simulation.solve_fields()
 		else:
-			Ez = Estart
-
-		# Solve iteratively
-		for istep in range(max_num_iter):
-			Eprev = Ez
-
-			(fx, Jac11, Jac12) = nl_eq_and_jac(simulation, Ez=Eprev,
-											   matrix_format=matrix_format)
-
-			# Note: Newton's method is defined as a linear problem to avoid inverting the Jacobian
-			# Namely, J*(x_n - x_{n-1}) = -f(x_{n-1}), where J = df/dx(x_{n-1})
-
-			Ediff = solver_complex2real(Jac11, Jac12, fx,
-										solver=solver, timing=False)
-			# Abig = sp.sp_vstack((sp.sp_hstack((Jac11, Jac12)), \
-			#   sp.sp_hstack((np.conj(Jac12), np.conj(Jac11)))))
-			# Ediff = solver_direct(Abig, np.vstack((fx, np.conj(fx))))
-
-			Ez = Eprev - Ediff[range(Nbig)].reshape(simulation.Nx, simulation.Ny)
-
-			# get convergence and break
-			convergence = la.norm(Ez - Eprev)/la.norm(Ez)
-			conv_array[istep] = convergence
-
-			# if below threshold, break and return
-			if convergence < conv_threshold:
-				break
-
-		# Solve the fdfd problem with the final eps_nl
-		simulation.compute_nl(Ez)
-		(Hx, Hy, Ez) = simulation.solve_fields(include_nl=True)
-
-		if convergence > conv_threshold:
-			print("the simulation did not converge, reached {}".format(convergence))
-
-		return (Hx, Hy, Ez, conv_array)
-
+			Ez = deepcopy(simulation.fields['Ez'])
 	else:
-		raise ValueError('Invalid polarization: {}'.format(str(self.pol)))
+		Ez = Estart
+
+	# Solve iteratively
+	for istep in range(max_num_iter):
+		Eprev = Ez
+
+		(fx, Jac11, Jac12) = nl_eq_and_jac(simulation, Ez=Eprev,
+										   matrix_format=matrix_format)
+
+		# Note: Newton's method is defined as a linear problem to avoid inverting the Jacobian
+		# Namely, J*(x_n - x_{n-1}) = -f(x_{n-1}), where J = df/dx(x_{n-1})
+
+		Ediff = solver_complex2real(Jac11, Jac12, fx,
+									solver=solver, timing=False)
+		# Abig = sp.sp_vstack((sp.sp_hstack((Jac11, Jac12)), \
+		#   sp.sp_hstack((np.conj(Jac12), np.conj(Jac11)))))
+		# Ediff = solver_direct(Abig, np.vstack((fx, np.conj(fx))))
+
+		Ez = Eprev - Ediff[range(Nbig)].reshape(simulation.Nx, simulation.Ny)
+
+		# get convergence and break
+		convergence = la.norm(Ez - Eprev)/la.norm(Ez)
+		conv_array[istep] = convergence
+
+		# if below threshold, break and return
+		if convergence < conv_threshold:
+			break
+
+	# Solve the fdfd problem with the final eps_nl
+	simulation.compute_nl(Ez)
+	(Hx, Hy, Ez) = simulation.solve_fields(include_nl=True)
+
+	if convergence > conv_threshold:
+		print(f"the simulation did not converge, reached {convergence}")
+
+	return (Hx, Hy, Ez, conv_array)
 
 def nl_eq_and_jac(simulation,
 				  averaging=True, Ex=None, Ey=None, Ez=None, compute_jac=True,
@@ -145,12 +143,9 @@ def nl_eq_and_jac(simulation,
 		raise ValueError('angler doesnt support newton method for Hz polarization yet')		
 
 	else:
-		raise ValueError('Invalid polarization: {}'.format(str(self.pol)))
+		raise ValueError(f'Invalid polarization: {str(self.pol)}')
 
-	if compute_jac:
-		return (fE, Jac11, Jac12)
-	else:
-		return fE
+	return (fE, Jac11, Jac12) if compute_jac else fE
 
 
 def newton_krylov_solve(simulation, Estart=None, conv_threshold=1e-10, max_num_iter=50,

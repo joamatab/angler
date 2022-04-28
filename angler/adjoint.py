@@ -21,9 +21,7 @@ def adjoint_linear_Ez(simulation, b_aj, averaging=False, solver=DEFAULT_SOLVER, 
     A = simulation.A
 
     ez = solver_direct(A.T, b_aj, solver=solver)
-    Ez = ez.reshape((Nx, Ny))
-
-    return Ez
+    return ez.reshape((Nx, Ny))
 
 
 def adjoint_linear_Hz(simulation, b_aj, averaging=False, solver=DEFAULT_SOLVER, matrix_format=DEFAULT_MATRIX_FORMAT):

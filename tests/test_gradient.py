@@ -67,8 +67,7 @@ class TestGradient(unittest.TestCase):
             linear_bot    = -1*npa.sum(npa.square(npa.abs(e))*J_bot)
             nonlinear_top = -1*npa.sum(npa.square(npa.abs(e_nl))*J_top)
             nonlinear_bot =  1*npa.sum(npa.square(npa.abs(e_nl))*J_bot)
-            objfn = linear_top + nonlinear_top + nonlinear_bot + linear_top
-            return objfn
+            return linear_top + nonlinear_top + nonlinear_bot + linear_top
 
         self.design_region = design_region
         self.optimization = Optimization(J=J, simulation=self.simulation, design_region=self.design_region, eps_m=eps_m)

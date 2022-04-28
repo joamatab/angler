@@ -50,28 +50,33 @@ class Optimization():
         """
 
         # do something only if the fields are not current, or there are no stored fields
-        if not self.fields_current or not self.field_arg_list:
+        if self.fields_current and self.field_arg_list:
+            return
+        _ = simulation.solve_fields()
+        if not self.objective.is_linear():
+            _ = simulation.solve_fields_nl()
 
-            _ = simulation.solve_fields()
-            if not self.objective.is_linear():
-                _ = simulation.solve_fields_nl()
+        # prepare a list of arguments that correspond to obj_fn arguments
+        field_arg_list = []
+        for arg in self.objective.arg_list:
+            field = (
+                simulation.fields_nl[arg.component]
+                if arg.nl
+                else simulation.fields[arg.component]
+            )
 
-            # prepare a list of arguments that correspond to obj_fn arguments
-            field_arg_list = []
-            for arg in self.objective.arg_list:
-                if not arg.nl:
-                    field = simulation.fields[arg.component]
-                else:
-                    field = simulation.fields_nl[arg.component]
-                if field is None:
-                    raise ValueError("couldn't find a field defined for component '{}'.  Could be the wrong polarization (simulation is '{}' polarization).".format(arg.component, self.simulation.pol))
-                field_arg_list.append(field)
+            if field is None:
+                raise ValueError(
+                    f"couldn't find a field defined for component '{arg.component}'.  Could be the wrong polarization (simulation is '{self.simulation.pol}' polarization)."
+                )
 
-            # store these arguments (so that they dont have to be recomputed)
-            self.field_arg_list = field_arg_list
+            field_arg_list.append(field)
 
-            # lets other functions know the field_arg_list is up to date
-            self.fields_current = True
+        # store these arguments (so that they dont have to be recomputed)
+        self.field_arg_list = field_arg_list
+
+        # lets other functions know the field_arg_list is up to date
+        self.fields_current = True
 
 
     def compute_J(self, simulation):
@@ -92,10 +97,12 @@ class Optimization():
         # sum up gradient contributions from each argument in J
         gradient_sum = 0
         for gradient_fn, dJ, arg in zip(self.objective.grad_fn_list, self.objective.dJ_list, self.objective.arg_list):
-            if not arg.nl:
-                Fz = simulation.fields[simulation.pol]
-            else:
-                Fz = simulation.fields_nl[simulation.pol]
+            Fz = (
+                simulation.fields_nl[simulation.pol]
+                if arg.nl
+                else simulation.fields[simulation.pol]
+            )
+
             gradient = gradient_fn(self, dJ, Fz, self.field_arg_list)
             gradient_sum += gradient
 
@@ -152,26 +159,37 @@ class Optimization():
     def _make_progressbar(self, N):
         """ Returns a progressbar to use during optimization"""
 
-        if self.max_ind_shift is not None:
-
-            bar = progressbar.ProgressBar(widgets=[
-                ' ', progressbar.DynamicMessage('ObjectiveFn'),
-                ' ', progressbar.DynamicMessage('ObjectiveFn_Normalized'),
-                ' Iteration: ',
-                ' ', progressbar.Counter(), '/%d' % N,
-                ' ', progressbar.AdaptiveETA(),
-            ], max_value=N)
-
-        else:
-
-            bar = progressbar.ProgressBar(widgets=[
-                ' ', progressbar.DynamicMessage('ObjectiveFn'),
-                ' Iteration: ',
-                ' ', progressbar.Counter(), '/%d' % N,
-                ' ', progressbar.AdaptiveETA(),
-            ], max_value=N)
-
-        return bar
+        return (
+            progressbar.ProgressBar(
+                widgets=[
+                    ' ',
+                    progressbar.DynamicMessage('ObjectiveFn'),
+                    ' ',
+                    progressbar.DynamicMessage('ObjectiveFn_Normalized'),
+                    ' Iteration: ',
+                    ' ',
+                    progressbar.Counter(),
+                    '/%d' % N,
+                    ' ',
+                    progressbar.AdaptiveETA(),
+                ],
+                max_value=N,
+            )
+            if self.max_ind_shift is not None
+            else progressbar.ProgressBar(
+                widgets=[
+                    ' ',
+                    progressbar.DynamicMessage('ObjectiveFn'),
+                    ' Iteration: ',
+                    ' ',
+                    progressbar.Counter(),
+                    '/%d' % N,
+                    ' ',
+                    progressbar.AdaptiveETA(),
+                ],
+                max_value=N,
+            )
+        )
 
     def _update_progressbar(self, pbar, iteration, J):
 
@@ -195,10 +213,8 @@ class Optimization():
         if self.simulation.rho is None:
             eps = copy.deepcopy(self.simulation.eps_r)
             self.simulation.rho = eps2rho(eps)
-        
+
         self.fields_current = False
-        
-        allowed = ['LBFGS', 'GD', 'ADAM']
 
         if method.lower() in ['lbfgs']:
             self._run_LBFGS()
@@ -210,7 +226,9 @@ class Optimization():
             self._run_ADAM(step_size=step_size, beta1=beta1, beta2=beta2)
 
         else:
-            raise ValueError("'method' must be in {}".format(allowed))
+            allowed = ['LBFGS', 'GD', 'ADAM']
+
+            raise ValueError(f"'method' must be in {allowed}")
 
     def _run_GD(self, step_size):
         """ Performs simple grad descent optimization"""
@@ -228,9 +246,11 @@ class Optimization():
 
             grad = self.compute_dJ(self.simulation, self.design_region)
 
-            if self.temp_plt is not None:
-                if np.mod(iteration, self.temp_plt.it_plot) == 0:
-                    self.plot_it(iteration)
+            if (
+                self.temp_plt is not None
+                and np.mod(iteration, self.temp_plt.it_plot) == 0
+            ):
+                self.plot_it(iteration)
 
             self._update_rho(grad, step_size)
 
@@ -255,9 +275,11 @@ class Optimization():
 
             (grad_adam, mopt, vopt) = self._step_adam(grad, mopt, vopt, iteration, beta1, beta2,)
 
-            if self.temp_plt is not None:
-                if np.mod(iteration, self.temp_plt.it_plot) == 0:
-                    self.plot_it(iteration)
+            if (
+                self.temp_plt is not None
+                and np.mod(iteration, self.temp_plt.it_plot) == 0
+            ):
+                self.plot_it(iteration)
 
             self._update_rho(grad_adam, step_size)
 
@@ -297,9 +319,11 @@ class Optimization():
             self.objfn_list.append(J)
             self._set_design_region(x_current)
             self._set_source_amplitude()
-            if self.temp_plt is not None:
-                if np.mod(iter_list[0], self.temp_plt.it_plot) == 0:
-                    self.plot_it(iter_list[0])
+            if (
+                self.temp_plt is not None
+                and np.mod(iter_list[0], self.temp_plt.it_plot) == 0
+            ):
+                self.plot_it(iter_list[0])
 
             iter_list[0] += 1
 
@@ -348,7 +372,16 @@ class Optimization():
             f, axs = plt.subplots(1, Nplots, figsize=self.temp_plt.figsize)
 
         for n, plots in enumerate(self.temp_plt.plot_what):
-            if plots == 'eps':
+            if plots == 'elin':
+                ax = axs[n]
+                self.simulation.plt_abs(outline=True, cbar=False, ax=ax, logscale=True, vmin=vmin, vmax=vmax)
+                ax.set_title('Linear field')
+            elif plots == 'enl':
+                ax = axs[n]
+                self.simulation.plt_abs(outline=True, cbar=False, ax=ax, nl=True, logscale=True, vmin=vmin, vmax=vmax)
+                ax.set_title('Nonlinear field')
+
+            elif plots == 'eps':
                 ax = axs[n]
                 self.simulation.plt_eps(outline=False, cbar=False, ax=ax)
                 ax.set_title('Permittivity')
@@ -358,19 +391,10 @@ class Optimization():
                     color='k',
                     horizontalalignment='center',
                     verticalalignment='center')
-            if plots == 'of':
+            elif plots == 'of':
                 ax = axs[n]
                 self.plt_objs(ax=ax)
                 ax.set_title('Objective')
-            if plots == 'elin':
-                ax = axs[n]
-                self.simulation.plt_abs(outline=True, cbar=False, ax=ax, logscale=True, vmin=vmin, vmax=vmax)
-                ax.set_title('Linear field')
-            if plots == 'enl':
-                ax = axs[n]
-                self.simulation.plt_abs(outline=True, cbar=False, ax=ax, nl=True, logscale=True, vmin=vmin, vmax=vmax)
-                ax.set_title('Nonlinear field')
-        
         fname = self.temp_plt.folder + ('it%06d.png' % np.int(iteration))
         plt.savefig(fname, dpi=self.temp_plt.dpi)
 
@@ -398,8 +422,7 @@ class Optimization():
 
         spatial_vec = copy.deepcopy(np.ndarray.flatten(spatial_array))
         des_vec = np.ndarray.flatten(self.design_region)
-        x = spatial_vec[des_vec == 1]
-        return x
+        return spatial_vec[des_vec == 1]
 
     def _set_source_amplitude(self, epsilon=1e-2, N=1):
         """ If max_index_shift specified, sets the self.simulation.src amplitude

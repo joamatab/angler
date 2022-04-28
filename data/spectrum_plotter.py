@@ -14,10 +14,7 @@ def apply_sublabels(axs, invert_color_inds, x=19, y=-5, size='large', ha='right'
     # axs = list of axes
     # invert_color_ind = list of booleans (True to make sublabels white, else False)
     for n, ax in enumerate(axs):
-        if invert_color_inds[n]:
-            color='w'
-        else:
-            color='k'
+        color = 'w' if invert_color_inds[n] else 'k'
         ax.annotate(prefix + ascii_lowercase[n] + postfix,
                     xy=(0, 1),
                     xytext=(x, y),
@@ -82,8 +79,8 @@ def get_spectrum(D):
         probes = [probe_right_low, probe_top_low, probe_right_high, probe_top_high]
 
     spectra = []
-    for probe_index, probe in enumerate(probes):
-        freqs, spectrum = scan_frequency(D, probe)  
+    for probe in probes:
+        freqs, spectrum = scan_frequency(D, probe)
         spectra.append(spectrum)
 
     return freqs, spectra

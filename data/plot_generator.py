@@ -49,7 +49,7 @@ def plot_Device(D):
     elif structure_type == 'ortho_port':
         f = plot_ortho_port(D)
     else:
-        raise ValueError("Incorrect structure_type: {}".format(structure_type))
+        raise ValueError(f"Incorrect structure_type: {structure_type}")
     return f
 
 def pad_array(array, padding, val):
@@ -63,8 +63,7 @@ def pad_list(ls, padding, dl):
     N = len(ls)
     N_new = N + 2*padding
     n = N_new/2
-    ls_new = [dl*(l-n) for l in range(N_new)]
-    return ls_new
+    return [dl*(l-n) for l in range(N_new)]
 
 
 

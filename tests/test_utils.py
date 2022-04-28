@@ -91,8 +91,7 @@ class TestUtils(unittest.TestCase):
             linear_bot = npa.sum(npa.square(npa.abs(e))*self.J_bot)
             nonlinear_top = npa.sum(npa.square(npa.abs(e_nl))*self.J_top)
             nonlinear_bot = npa.sum(npa.square(npa.abs(e_nl))*self.J_bot)
-            objfn = linear_top - nonlinear_top + nonlinear_bot - linear_top
-            return objfn
+            return linear_top - nonlinear_top + nonlinear_bot - linear_top
 
         self.optimization = Optimization(J=J, simulation=self.simulation, design_region=self.design_region, eps_m=eps_m)
 
@@ -105,8 +104,7 @@ class TestUtils(unittest.TestCase):
             linear_bot = npa.sum(npa.square(npa.abs(e))*self.J_bot)
             nonlinear_top = npa.sum(npa.square(npa.abs(e_nl))*self.J_top)
             nonlinear_bot = npa.sum(npa.square(npa.abs(e_nl))*self.J_bot)
-            objfn = linear_top + nonlinear_bot
-            return objfn
+            return linear_top + nonlinear_bot
 
         self.simulation.init_design_region(self.design_region, self.eps_m, style='full')
 
@@ -120,8 +118,7 @@ class TestUtils(unittest.TestCase):
             linear_bot = npa.sum(npa.square(npa.abs(e))*self.J_bot)
             nonlinear_top = npa.sum(npa.square(npa.abs(e_nl))*self.J_top)
             nonlinear_bot = npa.sum(npa.square(npa.abs(e_nl))*self.J_bot)
-            objfn = linear_top + nonlinear_bot       
-            return objfn
+            return linear_top + nonlinear_bot
 
         (_, _, Ez) = self.simulation.solve_fields()
         (_, _, Ez_nl, _) = self.simulation.solve_fields_nl()
@@ -146,8 +143,7 @@ class TestUtils(unittest.TestCase):
             linear_bot = npa.sum(npa.square(npa.abs(e))*self.J_bot)
             nonlinear_top = npa.sum(npa.square(npa.abs(e_nl))*self.J_top)
             nonlinear_bot = npa.sum(npa.square(npa.abs(e_nl))*self.J_bot)
-            objfn = linear_top + nonlinear_bot        
-            return objfn
+            return linear_top + nonlinear_bot
 
         (_, _, Ez) = self.simulation.solve_fields()
         (_, _, Ez_nl, _) = self.simulation.solve_fields_nl()
@@ -168,8 +164,7 @@ class TestUtils(unittest.TestCase):
             linear_bot = npa.sum(npa.square(npa.abs(e))*self.J_bot)
             nonlinear_top = npa.sum(npa.square(npa.abs(e_nl))*self.J_top)
             nonlinear_bot = npa.sum(npa.square(npa.abs(e_nl))*self.J_bot)
-            objfn = linear_top + nonlinear_bot      
-            return objfn
+            return linear_top + nonlinear_bot
 
         (_, _, Ez) = self.simulation.solve_fields()
         (_, _, Ez_nl, _) = self.simulation.solve_fields_nl()
@@ -243,8 +238,7 @@ class TestUtils(unittest.TestCase):
             linear_bot = npa.sum(npa.square(npa.abs(e))*self.J_bot)
             nonlinear_top = npa.sum(npa.square(npa.abs(e_nl))*self.J_top)
             nonlinear_bot = npa.sum(npa.square(npa.abs(e_nl))*self.J_bot)
-            objfn = linear_top + nonlinear_bot      
-            return objfn
+            return linear_top + nonlinear_bot
 
         self.simulation.init_design_region(self.design_region, self.eps_m, style='random')
 

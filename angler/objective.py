@@ -36,20 +36,18 @@ class Objective():
         if not isinstance(arg_list, list):
             arg_list = [arg_list]
         self.arg_list = arg_list
-        
+
         # make sure number of arguments is consistent between J and arglist
         self.J = J
         sig = signature(J)
         num_args_J = len(sig.parameters.items())
         if (len(arg_list) != num_args_J):
-            raise ValueError("number of arguemnts in J ({}) doesnt match that of arg_list ({})".format(len(arg_list), num_args_J))
+            raise ValueError(
+                f"number of arguemnts in J ({len(arg_list)}) doesnt match that of arg_list ({num_args_J})"
+            )
 
     def is_linear(self):
-        # is the objective function purely a function of linear fields?
-        for arg in self.arg_list:
-            if arg.nl:
-                return False
-        return True
+        return not any(arg.nl for arg in self.arg_list)
 
     @property
     def J(self):
@@ -69,17 +67,13 @@ class Objective():
         num_args = len(sig.parameters.items())
 
         # note: eventually want to check whether J has eps_nl argument, then switch between linear and nonlinear depending.
-        dJ_list = []
+        dJ_list = [grad(self._J, arg_index) for arg_index in range(num_args)]
 
-        for arg_index in range(num_args):
-            dJ_list.append(grad(self._J, arg_index))
         self.dJ_list = dJ_list
 
     def _get_gradients(self):
         # loads in the gradient functions from the arg_list
-        grad_fn_list = []
-        for arg in self.arg_list:
-            grad_fn_list.append(arg.gradient)
+        grad_fn_list = [arg.gradient for arg in self.arg_list]
         self.grad_fn_list = grad_fn_list
 
 
@@ -95,8 +89,11 @@ class obj_arg():
         self.name = str(name)
 
         # get field component
-        if not component in {'Ex','Ey','Ez','Hx','Hy','Hz'}:
-            raise ValueError("component must be in ['Ex','Ey','Ez','Hx','Hy','Hz'], was given '{}'".format(component))
+        if component not in {'Ex', 'Ey', 'Ez', 'Hx', 'Hy', 'Hz'}:
+            raise ValueError(
+                f"component must be in ['Ex','Ey','Ez','Hx','Hy','Hz'], was given '{component}'"
+            )
+
         self.component = component
 
         # whether this is nonlinear field
@@ -107,11 +104,13 @@ class obj_arg():
     def _select_gradient(self):
         # selects the correct gradient function.  
 
-        lin_nl_selector = 'lin' if not self.nl else 'nl'
+        lin_nl_selector = 'nl' if self.nl else 'lin'
         self.gradient = GRADIENT_MAP[self.component][lin_nl_selector]
 
         if self.gradient is None:
-            raise ValueError("Couldn't find a gradient for argument '{}' defined in gradient.py.".format(self.name))
+            raise ValueError(
+                f"Couldn't find a gradient for argument '{self.name}' defined in gradient.py."
+            )
 
 if __name__ == "__main__":
 

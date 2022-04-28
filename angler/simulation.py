@@ -174,7 +174,7 @@ class Simulation:
             return (Hx, Hy, Ez)
 
         else:
-            raise ValueError('Invalid polarization: {}'.format(str(self.pol)))
+            raise ValueError(f'Invalid polarization: {str(self.pol)}')
 
     def solve_fields_nl(self,
                         timing=False, averaging=False,
@@ -231,17 +231,26 @@ class Simulation:
             self.fields_nl['Hz'] = Fz
 
         else:
-            raise ValueError('Invalid polarization: {}'.format(str(self.pol)))
+            raise ValueError(f'Invalid polarization: {str(self.pol)}')
 
         return (Fx, Fy, Fz, conv_array)
 
     def _check_inputs(self):
         # checks the inputs and makes sure they are kosher
 
-        assert self.L0 > 0, "L0 must be a positive number, was supplied {},".format(str(self.L0))
-        assert self.omega > 0, "omega must be a positive number, was supplied {},".format(str(self.omega))
+        assert (
+            self.L0 > 0
+        ), f"L0 must be a positive number, was supplied {str(self.L0)},"
+
+        assert (
+            self.omega > 0
+        ), f"omega must be a positive number, was supplied {str(self.omega)},"
+
         assert isinstance(self.NPML, list), "NPML must be a list of integers"
-        assert len(self.NPML) == 2, "yrange must be a list of length 2, was supplied {}, which is of length {}".format(str(self.NPML), len(self.NPML))
+        assert (
+            len(self.NPML) == 2
+        ), f"yrange must be a list of length 2, was supplied {str(self.NPML)}, which is of length {len(self.NPML)}"
+
         assert self.NPML[0] >= 0 and self.NPML[1] >= 0, "both elements of NPML must be >= 0"
         assert self.pol in ['Ez', 'Hz'], "pol must be one of 'Ez' or 'Hz'"
         # to do, check for correct types as well.

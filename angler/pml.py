@@ -25,7 +25,7 @@ def create_sfactor(wrange, L0, s, omega, Nw, Nw_pml):
         return sfactor_array
     hw = np.diff(wrange)[0]/Nw
     dw = Nw_pml*hw
-    for i in range(0, Nw):
+    for i in range(Nw):
         if s is 'f':
             if i <= Nw_pml:
                 sfactor_array[i] = S(hw * (Nw_pml - i + 0.5), dw, omega, L0)
@@ -66,11 +66,11 @@ def S_create(omega, L0, N, Npml, xrange,
     Sy_f_2D = np.zeros(N, dtype=np.complex128)
     Sy_b_2D = np.zeros(N, dtype=np.complex128)
 
-    for i in range(0, Ny):
+    for i in range(Ny):
         Sx_f_2D[:, i] = 1/s_vector_x_f
         Sx_b_2D[:, i] = 1/s_vector_x_b
 
-    for i in range(0, Nx):
+    for i in range(Nx):
         Sy_f_2D[i, :] = 1/s_vector_y_f
         Sy_b_2D[i, :] = 1/s_vector_y_b
 

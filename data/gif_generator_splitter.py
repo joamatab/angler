@@ -89,8 +89,7 @@ import autograd.numpy as npa
 def J(e, e_nl):
     linear_top =     1*npa.sum(npa.square(npa.abs(e*J_top)))
     linear_bot =     1*npa.sum(npa.square(npa.abs(e*J_bot)))
-    objfn = linear_top * linear_bot * 4
-    return objfn
+    return linear_top * linear_bot * 4
 
 # make optimization object
 R = 3	       # filter radius of curvature (pixels)  (takes a while to set up as R > 5-10)

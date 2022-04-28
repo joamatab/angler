@@ -260,7 +260,7 @@ def grad_linear_Hz(optimization, dJ, Hz, args, averaging=False):
     # partial_vec = partial.reshape((-1,))
 
     b_aj = -dJ(*args)
-    (Ex_aj, Ey_aj) = adjoint_linear_Hz(optimization.simulation, b_aj, averaging=averaging)   
+    (Ex_aj, Ey_aj) = adjoint_linear_Hz(optimization.simulation, b_aj, averaging=averaging)
     Ex_aj_vec = np.reshape(Ex_aj, (-1,)).T
     Ey_aj_vec = np.reshape(Ey_aj, (-1,)).T
 
@@ -276,22 +276,20 @@ def grad_linear_Hz(optimization, dJ, Hz, args, averaging=False):
     if averaging:
 
         design_region_x = grid_average(optimization.design_region, 'x')
-        dAdeps_x = design_region_x*omega**2*EPSILON_0_            
+        dAdeps_x = design_region_x*omega**2*EPSILON_0_
         design_region_y = grid_average(optimization.design_region, 'y')
         dAdeps_y = design_region_y*omega**2*EPSILON_0_
         dAdeps_vec_x = np.reshape(dAdeps_x, (-1,))
         dAdeps_vec_y = np.reshape(dAdeps_y, (-1,))
         dfdrho_x = eps_mat*filt_mat.multiply(Ex_vec*proj_mat*dAdeps_vec_x)
         dfdrho_y = eps_mat*filt_mat.multiply(Ey_vec*proj_mat*dAdeps_vec_x)
-        sensitivity_vec = dfdrho_x.dot(Ex_aj_vec) + dfdrho_y.dot(Ey_aj_vec)    
-
     else:
 
         dAdeps = optimization.design_region*omega**2*EPSILON_0_    # Note: physical constants go here if need be!
         dAdeps_vec = np.reshape(dAdeps, (-1,))
         dfdrho_x = eps_mat*filt_mat.multiply(Ex_vec*proj_mat*dAdeps_vec)
         dfdrho_y = eps_mat*filt_mat.multiply(Ey_vec*proj_mat*dAdeps_vec)
-        sensitivity_vec = dfdrho_x.dot(Ex_aj_vec) + dfdrho_y.dot(Ey_aj_vec)    
+    sensitivity_vec = dfdrho_x.dot(Ex_aj_vec) + dfdrho_y.dot(Ey_aj_vec)    
 
     return 1*np.real(np.reshape(sensitivity_vec, rho.shape))    
 
@@ -331,7 +329,7 @@ def grad_linear_Ex(optimization, dJ, Hz, args, averaging=False):
     b_aj_vec =  1/1j/omega * T_eps_y_inv.dot(Dyb.T).dot(partial_vec)
     b_aj = b_aj_vec.reshape(Hz.shape)
 
-    (Ex_aj, Ey_aj) = adjoint_linear_Hz(optimization.simulation, b_aj, averaging=averaging)   
+    (Ex_aj, Ey_aj) = adjoint_linear_Hz(optimization.simulation, b_aj, averaging=averaging)
     Ex_aj_vec = np.reshape(Ex_aj, (-1,)).T
     Ey_aj_vec = np.reshape(Ey_aj, (-1,)).T
 
@@ -347,22 +345,20 @@ def grad_linear_Ex(optimization, dJ, Hz, args, averaging=False):
     if averaging:
 
         design_region_x = grid_average(optimization.design_region, 'x')
-        dAdeps_x = design_region_x*omega**2*EPSILON_0_            
+        dAdeps_x = design_region_x*omega**2*EPSILON_0_
         design_region_y = grid_average(optimization.design_region, 'y')
         dAdeps_y = design_region_y*omega**2*EPSILON_0_
         dAdeps_vec_x = np.reshape(dAdeps_x, (-1,))
         dAdeps_vec_y = np.reshape(dAdeps_y, (-1,))
         dfdrho_x = eps_mat*filt_mat.multiply(Ex_vec*proj_mat*dAdeps_vec_x)
         dfdrho_y = eps_mat*filt_mat.multiply(Ey_vec*proj_mat*dAdeps_vec_x)
-        sensitivity_vec = dfdrho_x.dot(Ex_aj_vec) + dfdrho_y.dot(Ey_aj_vec)    
-
     else:
 
         dAdeps = optimization.design_region*omega**2*EPSILON_0_    # Note: physical constants go here if need be!
         dAdeps_vec = np.reshape(dAdeps, (-1,))
         dfdrho_x = eps_mat*filt_mat.multiply(Ex_vec*proj_mat*dAdeps_vec)
         dfdrho_y = eps_mat*filt_mat.multiply(Ey_vec*proj_mat*dAdeps_vec)
-        sensitivity_vec = dfdrho_x.dot(Ex_aj_vec) + dfdrho_y.dot(Ey_aj_vec)    
+    sensitivity_vec = dfdrho_x.dot(Ex_aj_vec) + dfdrho_y.dot(Ey_aj_vec)    
 
     return 1*np.real(np.reshape(sensitivity_vec, rho.shape)) 
 
@@ -402,7 +398,7 @@ def grad_linear_Ey(optimization, dJ, Hz, args, averaging=False):
     b_aj_vec = -1/1j/omega * T_eps_x_inv.dot(Dxb.T).dot(partial_vec)
     b_aj = b_aj_vec.reshape(Hz.shape)
 
-    (Ex_aj, Ey_aj) = adjoint_linear_Hz(optimization.simulation, b_aj, averaging=averaging)   
+    (Ex_aj, Ey_aj) = adjoint_linear_Hz(optimization.simulation, b_aj, averaging=averaging)
     Ex_aj_vec = np.reshape(Ex_aj, (-1,)).T
     Ey_aj_vec = np.reshape(Ey_aj, (-1,)).T
 
@@ -418,22 +414,20 @@ def grad_linear_Ey(optimization, dJ, Hz, args, averaging=False):
     if averaging:
 
         design_region_x = grid_average(optimization.design_region, 'x')
-        dAdeps_x = design_region_x*omega**2*EPSILON_0_            
+        dAdeps_x = design_region_x*omega**2*EPSILON_0_
         design_region_y = grid_average(optimization.design_region, 'y')
         dAdeps_y = design_region_y*omega**2*EPSILON_0_
         dAdeps_vec_x = np.reshape(dAdeps_x, (-1,))
         dAdeps_vec_y = np.reshape(dAdeps_y, (-1,))
         dfdrho_x = eps_mat*filt_mat.multiply(Ex_vec*proj_mat*dAdeps_vec_x)
         dfdrho_y = eps_mat*filt_mat.multiply(Ey_vec*proj_mat*dAdeps_vec_x)
-        sensitivity_vec = dfdrho_x.dot(Ex_aj_vec) + dfdrho_y.dot(Ey_aj_vec)    
-
     else:
 
         dAdeps = optimization.design_region*omega**2*EPSILON_0_    # Note: physical constants go here if need be!
         dAdeps_vec = np.reshape(dAdeps, (-1,))
         dfdrho_x = eps_mat*filt_mat.multiply(Ex_vec*proj_mat*dAdeps_vec)
         dfdrho_y = eps_mat*filt_mat.multiply(Ey_vec*proj_mat*dAdeps_vec)
-        sensitivity_vec = dfdrho_x.dot(Ex_aj_vec) + dfdrho_y.dot(Ey_aj_vec)    
+    sensitivity_vec = dfdrho_x.dot(Ex_aj_vec) + dfdrho_y.dot(Ey_aj_vec)    
 
     return 1*np.real(np.reshape(sensitivity_vec, rho.shape))
 

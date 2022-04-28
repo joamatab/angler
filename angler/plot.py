@@ -14,10 +14,20 @@ def plt_base(field_val, outline_val, cmap, vmin, vmax, label,
     if ax is None:
         fig, ax = plt.subplots(1, constrained_layout=True)
 
-    if not logscale:
-        h = ax.imshow(field_val, cmap=cmap, vmin=vmin, vmax=vmax, origin='lower')
-    else:
-        h = ax.imshow(field_val, cmap=cmap, vmin=vmin, vmax=vmax, origin='lower', norm=LogNorm(vmin=vmin, vmax=vmax))
+    h = (
+        ax.imshow(
+            field_val,
+            cmap=cmap,
+            vmin=vmin,
+            vmax=vmax,
+            origin='lower',
+            norm=LogNorm(vmin=vmin, vmax=vmax),
+        )
+        if logscale
+        else ax.imshow(
+            field_val, cmap=cmap, vmin=vmin, vmax=vmax, origin='lower'
+        )
+    )
 
     if cbar:
         plt.colorbar(h, label=label, ax=ax)

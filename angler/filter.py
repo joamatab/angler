@@ -43,9 +43,8 @@ def get_W(Nx, Ny, design_region, NPML, R=10):
     bar.start()
 
     for counti, i1 in enumerate(i_range):
-        bar.update(counti)        
-        for countj, j1 in enumerate(j_range):
-
+        bar.update(counti)
+        for j1 in j_range:
             r1 = np.array([i1, j1])
 
             row_index = sub2ind((Nx, Ny), i1, j1)
@@ -96,8 +95,7 @@ def rho2rhot(rho, W):
     (Nx, Ny) = rho.shape
     rho_vec = rho.reshape((-1,))
     rhot_vec = W.dot(rho_vec)
-    rhot = np.reshape(rhot_vec, (Nx, Ny))
-    return rhot
+    return np.reshape(rhot_vec, (Nx, Ny))
 
 
 def rhot2rhob(rhot, eta=0.5, beta=100):
@@ -120,8 +118,7 @@ def eps2rho(eps, eps_m):
 def rho2eps(rho, eps_m, W, eta=0.5, beta=100):
     rhot = rho2rhot(rho, W)
     rhob = rhot2rhob(rhot, eta=eta, beta=beta)
-    eps = rhob2eps(rhob, eps_m=eps_m)
-    return eps
+    return rhob2eps(rhob, eps_m=eps_m)
 
 
 """" DERIVATIVE OPERATORS """
@@ -207,9 +204,7 @@ if __name__ == '__main__':
 
                 if i1 <= R or i1 >= Nx-R-1:
                     pass
-                elif j1 <= R or j1 >= Ny-R-1:
-                    pass
-                else:
+                elif j1 > R and j1 < Ny - R - 1:
                     for i_diff in diffs:
                         i2 = i1 + i_diff
                         for j_diff in diffs:

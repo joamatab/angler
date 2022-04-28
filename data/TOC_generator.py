@@ -36,7 +36,7 @@ def plot_Device(D):
     elif structure_type == 'ortho_port':
         f = plot_ortho_port(D)
     else:
-        raise ValueError("Incorrect structure_type: {}".format(structure_type))
+        raise ValueError(f"Incorrect structure_type: {structure_type}")
     return f
 
 

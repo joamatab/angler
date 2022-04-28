@@ -91,16 +91,12 @@ class mode:
         est_beta = simulation.omega*np.sqrt(MU_0_*EPSILON_0_)*self.neff
         (vals, vecs) = solver_eigs(A, self.order, guess_value=np.square(est_beta))
 
-        if self.order == 1:
-            src = vecs
-        else:
-            src = vecs[:, self.order-1]
-
+        src = vecs if self.order == 1 else vecs[:, self.order-1]
         src *= self.scale
 
         if self.direction_normal == 'x':
             src = src.reshape((1, -1))
-            destination[inds_x[0]:inds_x[1], inds_y[0]:inds_y[1]] = np.abs(src)*np.sign(np.real(src))
         else:
             src = src.reshape((-1, 1))
-            destination[inds_x[0]:inds_x[1], inds_y[0]:inds_y[1]] = np.abs(src)*np.sign(np.real(src))
+
+        destination[inds_x[0]:inds_x[1], inds_y[0]:inds_y[1]] = np.abs(src)*np.sign(np.real(src))

@@ -12,8 +12,7 @@ from angler import Optimization
 def load_device(fname):
     """ Loads the pickled Device object """
     D_dict = pickle.load(open(fname, "rb"))
-    D = namedtuple('Device', D_dict.keys())(*D_dict.values())
-    return D
+    return namedtuple('Device', D_dict.keys())(*D_dict.values())
 
 
 class Device:
@@ -107,10 +106,10 @@ class Device:
         print('    computing power transmission')
         self.calc_transmissions()
 
-        print('    computing frequency scan ({} points)'.format(Nf))
+        print(f'    computing frequency scan ({Nf} points)')
         self.freq_scan(Nf=Nf)
 
-        print('    computing power scan ({} points)'.format(Np))
+        print(f'    computing power scan ({Np} points)')
         self.power_scan(Np=Np, s_min=s_min, s_max=s_max)
 
         self.is_data_generated = True
@@ -118,7 +117,7 @@ class Device:
     def compute_index_shift(self):
         """ compute the refractive index shift """
         self.index_shift = self.simulation.compute_index_shift()
-        print("        -> max index shift = {}".format(self.index_shift))
+        print(f"        -> max index shift = {self.index_shift}")
 
     def calc_transmissions(self):
         """ Gets the transmission data """
@@ -134,7 +133,7 @@ class Device:
 
         # input power
         self.W_in = self.simulation.W_in
-        print("        -> W_in = {}".format(self.W_in))
+        print(f"        -> W_in = {self.W_in}")
 
         # linear powers
         self.W_out_lin = self.simulation.flux_probe('x', [-self.NPML[0]-int(self.l/2/self.dl), self.ny], int(self.Ny/2))
@@ -154,7 +153,7 @@ class Device:
     def _calc_trans_three(self):
         # input power
         self.W_in = self.simulation.W_in
-        print("        -> W_in = {}".format(self.W_in))
+        print(f"        -> W_in = {self.W_in}")
 
         # linear powers
         self.W_top_lin = self.simulation.flux_probe('x', [-self.NPML[0]-int(self.l/2/self.dl), self.ny+int(self.d/2/self.dl)], int(self.H/2/self.dl))
@@ -181,7 +180,7 @@ class Device:
     def _calc_trans_ortho(self):
         # input power
         self.W_in = self.simulation.W_in
-        print("        -> W_in = {}".format(self.W_in))
+        print(f"        -> W_in = {self.W_in}")
 
         # linear powers
         self.W_right_lin = self.simulation.flux_probe('x', [-self.NPML[0]-int(self.l/2/self.dl), self.ny], int(self.H/2/self.dl))
@@ -220,7 +219,7 @@ class Device:
         plt.ylabel('objective function')
         plt.show()
 
-        print('        -> computed FWHM of {} (GHz):'.format(FWHM/1e9))
+        print(f'        -> computed FWHM of {FWHM / 1e9} (GHz):')
         print('        -> Q factor of {0:.2E}'.format(self.Q))        
 
     def power_scan(self, Np=50, s_min=1e-1, s_max=1e3):
